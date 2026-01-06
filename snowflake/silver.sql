@@ -1,0 +1,14 @@
+CREATE SCHEMA IF NOT EXISTS TRANSIT_GFTS.SILVER;
+
+CREATE OR REPLACE VIEW TRANSIT_GFTS.SILVER.TRIPS_UPDATE_SILVER AS
+SELECT
+    RAW_JSON:route_id::STRING              AS route_id,
+    RAW_JSON:stop_id::STRING               AS stop_id,
+    RAW_JSON:trip_id::STRING               AS trip_id,
+    TO_TIMESTAMP_NTZ(RAW_JSON:arrival_time::INT)   AS arrival_time,
+    TO_TIMESTAMP_NTZ(RAW_JSON:departure_time::INT) AS departure_time,
+    INGESTED_AT
+FROM TRANSIT_GFTS.BRONZE.RAW_MTA_DATA
+WHERE RAW_JSON:route_id IS NOT NULL
+  AND RAW_JSON:stop_id IS NOT NULL
+  AND RAW_JSON:trip_id IS NOT NULL;
